@@ -1,0 +1,2 @@
+// Trainer-specific hooks.
+export {};
