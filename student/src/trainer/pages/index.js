@@ -1,2 +1,2 @@
 // Trainer route-level screens.
-export {};
+export { TrainerTestsPage } from './TrainerTestsPage';

@@ -4,7 +4,7 @@ import { ActivityModal } from './ActivityModal';
 
 const API_URL = 'http://localhost:5000/api';
 
-export function BatchDetailsView({ batch, onBack }) {
+export function BatchDetailsView({ batch, onBack, onStartTestCreation }) {
   const [sections, setSections] = useState([]);
   const [expandedSection, setExpandedSection] = useState(null);
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -72,6 +72,13 @@ export function BatchDetailsView({ batch, onBack }) {
   };
 
   const handleCreateActivity = async (activityData, sectionId) => {
+    // If it's a test activity, use the new flow
+    if (activityData.activityType === 'test' && onStartTestCreation) {
+      onStartTestCreation(sectionId, batch._id);
+      return;
+    }
+
+    // Otherwise, use the old flow for other activity types
     try {
       const response = await fetch(`${API_URL}/sections/${sectionId}/activities`, {
         method: 'POST',
@@ -133,8 +140,8 @@ export function BatchDetailsView({ batch, onBack }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           onClick={onBack}
           className="flex items-center gap-2 rounded-lg bg-gray-200 px-4 py-2 text-gray-700 transition-all hover:bg-gray-300"
@@ -142,17 +149,17 @@ export function BatchDetailsView({ batch, onBack }) {
           <ArrowLeft className="h-5 w-5" />
           Back to Batches
         </button>
-        <div className="text-right">
-          <h3 className="text-xl font-bold text-gray-900">{batch.batchName}</h3>
+        <div className="text-left sm:text-right">
+          <h3 className="text-lg font-bold text-gray-900 sm:text-xl">{batch.batchName}</h3>
           <p className="text-sm text-gray-600">Trainer: {batch.trainerName}</p>
         </div>
       </div>
 
-      <div className="flex justify-between">
-        <h4 className="text-lg font-semibold text-gray-900">Sections ({sections.length})</h4>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h4 className="text-base font-semibold text-gray-900 sm:text-lg">Sections ({sections.length})</h4>
         <button
           onClick={() => setShowSectionForm(!showSectionForm)}
-          className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-all hover:bg-green-700"
+          className="flex items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-all hover:bg-green-700"
         >
           <Plus className="h-5 w-5" />
           Add Section
@@ -160,8 +167,8 @@ export function BatchDetailsView({ batch, onBack }) {
       </div>
 
       {showSectionForm && (
-        <div className="rounded-2xl bg-white p-6 shadow-lg">
-          <h5 className="mb-4 font-semibold text-gray-900">Create New Section</h5>
+        <div className="rounded-2xl bg-white p-4 shadow-lg sm:p-6">
+          <h5 className="mb-4 text-base font-semibold text-gray-900 sm:text-lg">Create New Section</h5>
           <form onSubmit={handleCreateSection} className="space-y-4">
             <input
               type="text"
@@ -178,7 +185,7 @@ export function BatchDetailsView({ batch, onBack }) {
               placeholder="Description (optional)"
               rows="2"
             />
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <button type="submit" className="rounded-lg bg-green-600 px-6 py-2 text-white hover:bg-green-700">
                 Create Section
               </button>
@@ -196,7 +203,7 @@ export function BatchDetailsView({ batch, onBack }) {
 
       <div className="space-y-4">
         {sections.length === 0 ? (
-          <div className="rounded-2xl bg-white p-8 text-center shadow-lg">
+          <div className="rounded-2xl bg-white p-6 text-center shadow-lg sm:p-8">
             <p className="text-gray-500">No sections yet. Click "Add Section" to create one.</p>
           </div>
         ) : (
@@ -214,14 +221,14 @@ export function BatchDetailsView({ batch, onBack }) {
 
             return (
               <div key={section._id} className="rounded-2xl bg-white shadow-lg">
-                <div className="flex items-center justify-between border-b border-gray-200 p-4">
+                <div className="flex items-center justify-between border-b border-gray-200 p-3 sm:p-4">
                   <button
                     onClick={() => setExpandedSection(expandedSection === section._id ? null : section._id)}
                     className="flex flex-1 items-center gap-2 text-left"
                   >
                     {expandedSection === section._id ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
                     <div className="flex-1">
-                      <h5 className="font-semibold text-gray-900">{section.sectionName}</h5>
+                      <h5 className="text-sm font-semibold text-gray-900 sm:text-base">{section.sectionName}</h5>
                       
                       {/* Activity Type Icons with Counts */}
                       <div className="mt-2 flex flex-wrap gap-2">
@@ -284,7 +291,7 @@ export function BatchDetailsView({ batch, onBack }) {
                 </div>
 
                 {expandedSection === section._id && (
-                  <div className="p-4">
+                  <div className="p-3 sm:p-4">
                     <div className="space-y-2">
                       {section.activities?.length === 0 ? (
                         <p className="text-sm text-gray-500">No activities yet</p>

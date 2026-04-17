@@ -1,2 +1,4 @@
 // Admin route-level screens.
-export {};
+export { CreateTestDetailsPage } from './CreateTestDetailsPage';
+export { AddQuestionsPage } from './AddQuestionsPage';
+export { ReviewTestPage } from './ReviewTestPage';

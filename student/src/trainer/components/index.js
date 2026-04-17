@@ -1,2 +1,2 @@
 // Trainer-specific UI components.
-export {};
+export { TestActivityModal } from './TestActivityModal';
